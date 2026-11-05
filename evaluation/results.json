@@ -1,0 +1,212 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "dataset_size": 10,
+  "metrics": {
+    "evaluated": 10,
+    "failed_requests": 0,
+    "true_positives": 6,
+    "false_positives": 0,
+    "true_negatives": 4,
+    "false_negatives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "accuracy": 1.0
+  },
+  "results": [
+    {
+      "id": "TC01",
+      "source": "The device must be disconnected before cleaning.",
+      "target": "El dispositivo puede desconectarse antes de limpiarlo.",
+      "expected_error": true,
+      "category": "Mistranslation",
+      "description": "Mandatory instruction becomes optional.",
+      "status": "success",
+      "predicted_error": true,
+      "assessment": {
+        "overall_assessment": "The translation contains a critical meaning change. The source text uses 'must', which indicates a mandatory requirement for safety, while the translation uses 'puede' (can), which implies an optional action.",
+        "issues": [
+          {
+            "category": "Mistranslation",
+            "severity": "Critical",
+            "source_excerpt": "must be disconnected",
+            "target_excerpt": "puede desconectarse",
+            "explanation": "The source text uses the modal verb 'must', conveying a mandatory safety instruction. The translation uses 'puede' (can), which changes the meaning to an optional action, potentially creating a safety risk.",
+            "suggestion": "El dispositivo debe desconectarse antes de limpiarlo."
+          }
+        ]
+      }
+    },
+    {
+      "id": "TC02",
+      "source": "The device must be disconnected before cleaning.",
+      "target": "El dispositivo debe desconectarse antes de limpiarlo.",
+      "expected_error": false,
+      "category": "Correct",
+      "description": "Correct safety instruction.",
+      "status": "success",
+      "predicted_error": false,
+      "assessment": {
+        "overall_assessment": "The translation is accurate, grammatically correct, and preserves the original meaning perfectly.",
+        "issues": []
+      }
+    },
+    {
+      "id": "TC03",
+      "source": "Do not expose the equipment to water.",
+      "target": "Exponga el equipo al agua.",
+      "expected_error": true,
+      "category": "Mistranslation",
+      "description": "Negation omitted.",
+      "status": "success",
+      "predicted_error": true,
+      "assessment": {
+        "overall_assessment": "The translation is factually opposite to the original text, creating a critical safety hazard.",
+        "issues": [
+          {
+            "category": "Mistranslation",
+            "severity": "Critical",
+            "source_excerpt": "Do not expose",
+            "target_excerpt": "Exponga",
+            "explanation": "The translation is an imperative that instructs to perform the action ('Expose'), while the original is a negative imperative ('Do not expose'). This is a safety-critical error.",
+            "suggestion": "No exponga el equipo al agua."
+          }
+        ]
+      }
+    },
+    {
+      "id": "TC04",
+      "source": "The battery lasts approximately 12 hours.",
+      "target": "La batería dura aproximadamente 21 horas.",
+      "expected_error": true,
+      "category": "Accuracy",
+      "description": "Incorrect numerical value.",
+      "status": "success",
+      "predicted_error": true,
+      "assessment": {
+        "overall_assessment": "The translation contains a critical factual error regarding the numerical value provided in the source text.",
+        "issues": [
+          {
+            "category": "Mistranslation",
+            "severity": "Critical",
+            "source_excerpt": "12 hours",
+            "target_excerpt": "21 horas",
+            "explanation": "The source text states '12 hours', but the translation states '21 hours'. This is a numerical error that misrepresents product specifications.",
+            "suggestion": "La batería dura aproximadamente 12 horas."
+          }
+        ]
+      }
+    },
+    {
+      "id": "TC05",
+      "source": "Press the green button to continue.",
+      "target": "Pulse el botón verde para continuar.",
+      "expected_error": false,
+      "category": "Correct",
+      "description": "Accurate translation.",
+      "status": "success",
+      "predicted_error": false,
+      "assessment": {
+        "overall_assessment": "The translation is accurate, grammatically correct, and preserves the original meaning perfectly.",
+        "issues": []
+      }
+    },
+    {
+      "id": "TC06",
+      "source": "The software automatically saves your changes.",
+      "target": "El software guarda los cambios.",
+      "expected_error": true,
+      "category": "Omission",
+      "description": "Automatically is omitted.",
+      "status": "success",
+      "predicted_error": true,
+      "assessment": {
+        "overall_assessment": "The translation is accurate in meaning but misses the nuance of the word 'automatically' present in the source text.",
+        "issues": [
+          {
+            "category": "Omission",
+            "severity": "Minor",
+            "source_excerpt": "automatically",
+            "target_excerpt": "N/A",
+            "explanation": "The word 'automatically' was omitted from the Spanish translation, which loses the specific functional detail that the action happens without user intervention.",
+            "suggestion": "El software guarda automáticamente los cambios."
+          }
+        ]
+      }
+    },
+    {
+      "id": "TC07",
+      "source": "The system is compatible with Windows and Linux.",
+      "target": "El sistema es compatible con Windows y Linux.",
+      "expected_error": false,
+      "category": "Correct",
+      "description": "Accurate technical translation.",
+      "status": "success",
+      "predicted_error": false,
+      "assessment": {
+        "overall_assessment": "The translation is accurate, grammatically correct, and preserves the original meaning perfectly.",
+        "issues": []
+      }
+    },
+    {
+      "id": "TC08",
+      "source": "Restart the application after installation.",
+      "target": "Reinicie la aplicación antes de la instalación.",
+      "expected_error": true,
+      "category": "Mistranslation",
+      "description": "After becomes before.",
+      "status": "success",
+      "predicted_error": true,
+      "assessment": {
+        "overall_assessment": "The translation contains a critical meaning error, as it swaps the logical sequence of the instruction.",
+        "issues": [
+          {
+            "category": "Mistranslation",
+            "severity": "Critical",
+            "source_excerpt": "after",
+            "target_excerpt": "antes de",
+            "explanation": "The source text specifies to restart the application 'after' the installation, whereas the target text incorrectly says 'antes de' (before) the installation, creating a logical contradiction.",
+            "suggestion": "Reinicie la aplicación después de la instalación."
+          }
+        ]
+      }
+    },
+    {
+      "id": "TC09",
+      "source": "The file was successfully uploaded.",
+      "target": "El archivo se ha subido correctamente.",
+      "expected_error": false,
+      "category": "Correct",
+      "description": "Natural and accurate translation.",
+      "status": "success",
+      "predicted_error": false,
+      "assessment": {
+        "overall_assessment": "The translation is accurate, natural, and maintains the original meaning perfectly.",
+        "issues": []
+      }
+    },
+    {
+      "id": "TC10",
+      "source": "The temperature must remain below 30°C.",
+      "target": "La temperatura debe mantenerse por encima de 30°C.",
+      "expected_error": true,
+      "category": "Mistranslation",
+      "description": "Below becomes above.",
+      "status": "success",
+      "predicted_error": true,
+      "assessment": {
+        "overall_assessment": "The translation contains a critical meaning error, as it states the opposite of the source text.",
+        "issues": [
+          {
+            "category": "Mistranslation",
+            "severity": "Critical",
+            "source_excerpt": "below 30°C",
+            "target_excerpt": "por encima de 30°C",
+            "explanation": "The translation uses 'por encima de' (above) instead of 'por debajo de' (below), which fundamentally changes the meaning and could result in safety risks.",
+            "suggestion": "La temperatura debe mantenerse por debajo de 30°C."
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+
+[
+  {
+    "id": "TC01",
+    "source": "The device must be disconnected before cleaning.",
+    "target": "El dispositivo puede desconectarse antes de limpiarlo.",
+    "expected_error": true,
+    "category": "Mistranslation",
+    "description": "Mandatory instruction becomes optional."
+  },
+  {
+    "id": "TC02",
+    "source": "The device must be disconnected before cleaning.",
+    "target": "El dispositivo debe desconectarse antes de limpiarlo.",
+    "expected_error": false,
+    "category": "Correct",
+    "description": "Correct safety instruction."
+  },
+  {
+    "id": "TC03",
+    "source": "Do not expose the equipment to water.",
+    "target": "Exponga el equipo al agua.",
+    "expected_error": true,
+    "category": "Mistranslation",
+    "description": "Negation omitted."
+  },
+  {
+    "id": "TC04",
+    "source": "The battery lasts approximately 12 hours.",
+    "target": "La batería dura aproximadamente 21 horas.",
+    "expected_error": true,
+    "category": "Accuracy",
+    "description": "Incorrect numerical value."
+  },
+  {
+    "id": "TC05",
+    "source": "Press the green button to continue.",
+    "target": "Pulse el botón verde para continuar.",
+    "expected_error": false,
+    "category": "Correct",
+    "description": "Accurate translation."
+  },
+  {
+    "id": "TC06",
+    "source": "The software automatically saves your changes.",
+    "target": "El software guarda los cambios.",
+    "expected_error": true,
+    "category": "Omission",
+    "description": "Automatically is omitted."
+  },
+  {
+    "id": "TC07",
+    "source": "The system is compatible with Windows and Linux.",
+    "target": "El sistema es compatible con Windows y Linux.",
+    "expected_error": false,
+    "category": "Correct",
+    "description": "Accurate technical translation."
+  },
+  {
+    "id": "TC08",
+    "source": "Restart the application after installation.",
+    "target": "Reinicie la aplicación antes de la instalación.",
+    "expected_error": true,
+    "category": "Mistranslation",
+    "description": "After becomes before."
+  },
+  {
+    "id": "TC09",
+    "source": "The file was successfully uploaded.",
+    "target": "El archivo se ha subido correctamente.",
+    "expected_error": false,
+    "category": "Correct",
+    "description": "Natural and accurate translation."
+  },
+  {
+    "id": "TC10",
+    "source": "The temperature must remain below 30°C.",
+    "target": "La temperatura debe mantenerse por encima de 30°C.",
+    "expected_error": true,
+    "category": "Mistranslation",
+    "description": "Below becomes above."
+  }
+]
