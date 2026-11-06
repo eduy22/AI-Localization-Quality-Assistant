@@ -84,308 +84,293 @@ st.divider()
 
 # Botón principal
 
-if st.button("Analyze translation", type="primary"):
 
+# Persistent results across Streamlit reruns
+if "review_result" not in st.session_state:
+    st.session_state.review_result = None
+
+if "review_mode" not in st.session_state:
+    st.session_state.review_mode = None
+
+
+def validate_inputs():
     if not source_text.strip() or not target_text.strip():
-        st.warning("Please provide both texts.")
+        st.warning("Please provide both source and target texts.")
+        return False
 
-    elif source_language == target_language:
+    if source_language == target_language:
         st.warning("Source and target languages must be different.")
+        return False
 
-    elif "GEMINI_API_KEY" not in st.secrets:
+    if "GEMINI_API_KEY" not in st.secrets:
         st.error("Gemini API key not found.")
+        return False
+
+    return True
+
+
+# Two side-by-side analysis buttons
+col1, col2 = st.columns(2)
+
+with col1:
+    analyze_clicked = st.button(
+        "Analyze Translation",
+        type="primary",
+        use_container_width=True
+    )
+
+with col2:
+    agent_clicked = st.button(
+        "Run AI Agent",
+        use_container_width=True
+    )
+
+
+if analyze_clicked or agent_clicked:
+
+    # Clear previous results before starting a new review
+    st.session_state.review_result = None
+    st.session_state.review_mode = None
+
+    if validate_inputs():
+
+        try:
+            if analyze_clicked:
+                with st.spinner("Analyzing translation with Gemini..."):
+
+                    ai_result = analyze_translation(
+                        source_text=source_text,
+                        target_text=target_text,
+                        source_language=source_language,
+                        target_language=target_language,
+                        glossary=glossary,
+                        api_key=st.secrets["GEMINI_API_KEY"]
+                    )
+
+                    terminology_result = check_terminology(
+                        source_text,
+                        target_text,
+                        glossary
+                    )
+
+                    report = generate_report(
+                        ai_result=ai_result,
+                        terminology_result=terminology_result,
+                        source_language=source_language,
+                        target_language=target_language
+                    )
+
+                    report["review_mode"] = "full_analysis"
+
+                    st.session_state.review_result = {
+                        "report": report,
+                        "ai_result": ai_result,
+                        "terminology_result": terminology_result
+                    }
+
+                    st.session_state.review_mode = "full"
+
+            elif agent_clicked:
+                with st.spinner("Running Gemini terminology agent..."):
+
+                    agent_result = run_terminology_agent(
+                        source_text=source_text,
+                        target_text=target_text,
+                        source_language=source_language,
+                        target_language=target_language,
+                        glossary=glossary,
+                        api_key=st.secrets["GEMINI_API_KEY"]
+                    )
+
+                    terminology_result = agent_result["tool_result"]
+
+                    # Reuse the report generator without
+                    # claiming a full linguistic assessment.
+                    agent_assessment = {
+                        "overall_assessment": agent_result["assessment"],
+                        "issues": []
+                    }
+
+                    report = generate_report(
+                        ai_result=agent_assessment,
+                        terminology_result=terminology_result,
+                        source_language=source_language,
+                        target_language=target_language
+                    )
+
+                    report["review_mode"] = "agent_terminology_review"
+                    report["tool_used"] = agent_result["tool_name"]
+
+                    st.session_state.review_result = {
+                        "report": report,
+                        "agent_result": agent_result,
+                        "terminology_result": terminology_result
+                    }
+
+                    st.session_state.review_mode = "agent"
+
+        except Exception as error:
+            st.error("The review could not be completed.")
+            st.caption(type(error).__name__)
+            st.code(str(error))
+
+
+# Display stored results
+if st.session_state.review_result is not None:
+
+    stored = st.session_state.review_result
+    report = stored["report"]
+    metrics = report["metrics"]
+    mode = st.session_state.review_mode
+
+    st.divider()
+
+    if mode == "full":
+        st.header("Translation Quality Report")
+        st.write(stored["ai_result"]["overall_assessment"])
 
     else:
-        with st.spinner("Analyzing translation with Gemini..."):
+        st.header("Agent Terminology Review")
+        st.write(stored["agent_result"]["assessment"])
 
-            try:
-                result = analyze_translation(
-                    source_text=source_text,
-                    target_text=target_text,
-                    source_language=source_language,
-                    target_language=target_language,
-                    glossary=glossary,
-                    api_key=st.secrets["GEMINI_API_KEY"]
-                )
+        with st.expander("Agent tool execution"):
+            st.write(
+                "**Tool requested:**",
+                stored["agent_result"]["tool_name"]
+            )
+            st.json(stored["agent_result"]["tool_result"])
 
-            except Exception as error:
-                st.error("The AI analysis could not be completed.")
-                st.caption(f"Error: {type(error).__name__}")
-                st.code(str(error))
+    st.subheader("Quality Metrics")
 
-            
-            else:
-                st.success("AI analysis completed!")
+    col1, col2, col3, col4 = st.columns(4)
 
-                # Gemini linguistic quality analysis
-                st.subheader("AI Linguistic Quality Assessment")
+    with col1:
+        st.metric("Total findings", metrics["total_issues"])
 
-                st.write(
-                    result.get(
-                        "overall_assessment",
-                        "No assessment available."
-                    )
-                )
+    with col2:
+        st.metric("Critical", metrics["critical"])
 
-                issues = result.get("issues", [])
+    with col3:
+        st.metric("Major", metrics["major"])
 
-                st.write(f"**AI-detected issues:** {len(issues)}")
+    with col4:
+        st.metric("Minor", metrics["minor"])
 
-                for index, issue in enumerate(issues, start=1):
+    terminology_result = stored["terminology_result"]
 
-                    category = issue.get("category", "Other")
-                    severity = issue.get("severity", "Unknown")
+    st.subheader("Terminology Compliance")
 
-                    with st.expander(
-                        f"Issue {index}: {category} ({severity})",
-                        expanded=True
-                    ):
-                        st.write(
-                            "**Source:**",
-                            issue.get("source_excerpt", "")
-                        )
-                        st.write(
-                            "**Translation:**",
-                            issue.get("target_excerpt", "")
-                        )
-                        st.write(
-                            "**Explanation:**",
-                            issue.get("explanation", "")
-                        )
-                        st.write(
-                            "**Suggested correction:**",
-                            issue.get("suggestion", "")
-                        )
+    col1, col2 = st.columns(2)
 
-                st.divider()
-
-                # Deterministic terminology validation
-                st.subheader("Terminology Compliance")
-
-                terminology_result = check_terminology(
-                    source_text,
-                    target_text,
-                    glossary
-                )
-
-                invalid_lines = terminology_result["invalid_lines"]
-
-                if invalid_lines:
-                    st.warning(
-                        "Invalid glossary entries on lines: "
-                        + ", ".join(map(str, invalid_lines))
-                    )
-
-                checked = terminology_result["checked_terms"]
-                compliant = terminology_result["compliant_terms"]
-                rate = terminology_result["compliance_rate"]
-
-                col1, col2, col3 = st.columns(3)
-
-                with col1:
-                    st.metric("Terms checked", checked)
-
-                with col2:
-                    st.metric("Compliant terms", compliant)
-
-                with col3:
-                    st.metric(
-                        "Compliance rate",
-                        f"{rate}%" if rate is not None else "N/A"
-                    )
-
-                terminology_issues = terminology_result["issues"]
-
-                if terminology_issues:
-                    st.warning(
-                        f"{len(terminology_issues)} potential "
-                        "terminology issue(s) detected."
-                    )
-
-                    for issue in terminology_issues:
-                        with st.expander(
-                            "Terminology: "
-                            + issue["source_excerpt"],
-                            expanded=True
-                        ):
-                            st.write(
-                                "**Required translation:**",
-                                issue["target_excerpt"]
-                            )
-                            st.write(
-                                "**Explanation:**",
-                                issue["explanation"]
-                            )
-                            st.write(
-                                "**Suggestion:**",
-                                issue["suggestion"]
-                            )
-
-                elif checked > 0:
-                    st.success(
-                        "All applicable glossary terms "
-                        "were found in the translation."
-                    )
-
-                else:
-                    st.info(
-                        "No applicable glossary terms to check."
-                    )
-
-                st.caption(
-                    "Terminology checks use exact normalized "
-                    "matching. Results may require human review."
-                )
-
-                
-                st.divider()
-
-                # Unified quality report
-                st.subheader("Unified Quality Report")
-
-                report = generate_report(
-                    ai_result=result,
-                    terminology_result=terminology_result,
-                    source_language=source_language,
-                    target_language=target_language
-                )
-
-                metrics = report["metrics"]
-
-                col1, col2, col3, col4 = st.columns(4)
-
-                with col1:
-                    st.metric(
-                        "Total findings",
-                        metrics["total_issues"]
-                    )
-
-                with col2:
-                    st.metric(
-                        "Critical",
-                        metrics["critical"]
-                    )
-
-                with col3:
-                    st.metric(
-                        "Major",
-                        metrics["major"]
-                    )
-
-                with col4:
-                    st.metric(
-                        "Minor",
-                        metrics["minor"]
-                    )
-
-                st.subheader("Findings by category")
-
-                if metrics["categories"]:
-                    st.bar_chart(metrics["categories"])
-                else:
-                    st.info("No findings to display.")
-
-                st.caption(
-                    "These are raw findings from two "
-                    "independent checks. The same problem "
-                    "may appear more than once."
-                )
-
-                st.subheader("Export report")
-
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.download_button(
-                        label="Download JSON report",
-                        data=export_json(report),
-                        file_name="localization_report.json",
-                        mime="application/json"
-                    )
-
-                with col2:
-                    st.download_button(
-                        label="Download CSV report",
-                        data=export_csv(report),
-                        file_name="localization_report.csv",
-                        mime="text/csv"
-                    )
-
-
-st.divider()
-
-st.header("AI Terminology Agent")
-
-st.write(
-    "Run a Gemini agent that requests a Python "
-    "terminology-checking tool and uses its results "
-    "to produce a review."
-)
-
-if st.button("Run Terminology Agent"):
-
-    if not source_text.strip() or not target_text.strip():
-        st.warning(
-            "Please provide both source and target texts."
+    with col1:
+        st.metric(
+            "Terms checked",
+            terminology_result["checked_terms"]
         )
 
-    elif source_language == target_language:
-        st.warning(
-            "Source and target languages must be different."
+    with col2:
+        rate = terminology_result["compliance_rate"]
+        st.metric(
+            "Compliance rate",
+            f"{rate}%" if rate is not None else "N/A"
         )
 
-    elif "GEMINI_API_KEY" not in st.secrets:
-        st.error("Gemini API key not found.")
+    if terminology_result["invalid_lines"]:
+        st.warning(
+            "Invalid glossary lines: "
+            + ", ".join(
+                map(str, terminology_result["invalid_lines"])
+            )
+        )
+
+    st.subheader("Findings by Category")
+
+    categories = metrics["categories"]
+
+    if categories:
+        chart_data = pd.DataFrame(
+            [
+                {"Category": name, "Findings": count}
+                for name, count in categories.items()
+            ]
+        )
+
+        chart = (
+            alt.Chart(chart_data)
+            .mark_bar(size=22, cornerRadiusEnd=4)
+            .encode(
+                y=alt.Y(
+                    "Category:N",
+                    sort="-x",
+                    title=None,
+                    axis=alt.Axis(labelAngle=0)
+                ),
+                x=alt.X(
+                    "Findings:Q",
+                    title="Number of findings",
+                    axis=alt.Axis(tickMinStep=1)
+                ),
+                tooltip=["Category", "Findings"]
+            )
+            .properties(height=max(90, len(categories) * 55))
+        )
+
+        st.altair_chart(chart, use_container_width=True)
 
     else:
-        with st.spinner(
-            "Gemini agent is reviewing terminology..."
-        ):
-            try:
-                agent_result = run_terminology_agent(
-                    source_text=source_text,
-                    target_text=target_text,
-                    source_language=source_language,
-                    target_language=target_language,
-                    glossary=glossary,
-                    api_key=st.secrets["GEMINI_API_KEY"]
-                )
+        st.info("No findings detected.")
 
-            except Exception as error:
-                st.error(
-                    "The terminology agent could not "
-                    "complete its review."
-                )
-                st.caption(type(error).__name__)
-                st.code(str(error))
+    st.subheader("Detected Issues")
 
-            else:
-                st.success("Agent review completed!")
+    if report["issues"]:
+        for index, issue in enumerate(report["issues"], start=1):
 
-                st.subheader("Agent Assessment")
+            with st.expander(
+                f"{index}. {issue['category']} "
+                f"({issue['severity']})",
+                expanded=True
+            ):
+                st.write("**Detected by:**", issue["detected_by"])
+                st.write("**Source:**", issue["source_excerpt"])
+                st.write("**Target / required term:**", issue["target_excerpt"])
+                st.write("**Explanation:**", issue["explanation"])
+                st.write("**Suggestion:**", issue["suggestion"])
 
-                st.write(agent_result["assessment"])
+    else:
+        st.success("No issues detected by the executed checks.")
 
-                st.subheader("Tool Execution")
+    st.caption(
+        "Findings from different checks may overlap. "
+        "Human review is recommended."
+    )
 
-                st.write(
-                    "**Tool requested:**",
-                    agent_result["tool_name"]
-                )
+    st.subheader("Export Report")
 
-                st.write(
-                    "**Tool arguments:**",
-                    agent_result["tool_arguments"]
-                )
+    col1, col2 = st.columns(2)
 
-                st.write("**Tool result:**")
+    filename = (
+        "agent_terminology_report"
+        if mode == "agent"
+        else "translation_quality_report"
+    )
 
-                st.json(agent_result["tool_result"])
+    with col1:
+        st.download_button(
+            "Download JSON",
+            data=export_json(report),
+            file_name=f"{filename}.json",
+            mime="application/json",
+            use_container_width=True
+        )
 
-                st.caption(
-                    "The tool was executed locally "
-                    "by Python. Gemini used its output "
-                    "to prepare the final assessment."
-                )
+    with col2:
+        st.download_button(
+            "Download CSV",
+            data=export_csv(report),
+            file_name=f"{filename}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
 
 

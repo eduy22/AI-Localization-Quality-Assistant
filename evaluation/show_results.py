@@ -4,6 +4,9 @@ from pathlib import Path
 
 import streamlit as st
 
+import altair as alt
+import pandas as pd
+
 
 RESULTS_PATH = Path(__file__).with_name("results.json")
 
@@ -55,14 +58,70 @@ with col4:
         f"{metrics['accuracy']:.1%}"
     )
 
-st.subheader("Confusion matrix counts")
 
-st.bar_chart({
-    "True Positive": metrics["true_positives"],
-    "False Positive": metrics["false_positives"],
-    "True Negative": metrics["true_negatives"],
-    "False Negative": metrics["false_negatives"]
-})
+st.subheader("Confusion Matrix")
+
+matrix_data = pd.DataFrame(
+    [
+        {
+            "Actual": "Error",
+            "Predicted": "Error",
+            "Count": metrics["true_positives"]
+        },
+        {
+            "Actual": "Error",
+            "Predicted": "No error",
+            "Count": metrics["false_negatives"]
+        },
+        {
+            "Actual": "No error",
+            "Predicted": "Error",
+            "Count": metrics["false_positives"]
+        },
+        {
+            "Actual": "No error",
+            "Predicted": "No error",
+            "Count": metrics["true_negatives"]
+        }
+    ]
+)
+
+heatmap = (
+    alt.Chart(matrix_data)
+    .mark_rect(cornerRadius=5)
+    .encode(
+        x=alt.X(
+            "Predicted:N",
+            title="Predicted classification",
+            sort=["Error", "No error"]
+        ),
+        y=alt.Y(
+            "Actual:N",
+            title="Actual classification",
+            sort=["Error", "No error"]
+        ),
+        color=alt.Color(
+            "Count:Q",
+            scale=alt.Scale(scheme="blues"),
+            legend=None
+        ),
+        tooltip=["Actual", "Predicted", "Count"]
+    )
+)
+
+labels = heatmap.mark_text(
+    fontSize=20,
+    fontWeight="bold"
+).encode(
+    text="Count:Q",
+    color=alt.value("#111827")
+)
+
+st.altair_chart(
+    (heatmap + labels).properties(height=230),
+    use_container_width=True
+)
+
 
 st.subheader("Individual test results")
 
