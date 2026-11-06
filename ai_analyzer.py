@@ -36,6 +36,13 @@ Return a JSON object containing:
 - overall_assessment: a short summary.
 - issues: a list of detected problems.
 
+The overall_assessment must:
+- Identify the most important translation error.
+- Explicitly mention the relevant source and target expressions.
+- Explain how the meaning changes.
+- Be concise (maximum 3 sentences).
+- Avoid vague statements when a specific error can be identified.
+
 Each issue must contain:
 - category
 - severity (Critical, Major or Minor)
@@ -64,7 +71,8 @@ If no issues are found, return an empty issues list.
         contents=content,
         config=types.GenerateContentConfig(
             system_instruction=instructions,
-            response_mime_type="application/json"
+            response_mime_type="application/json",
+            #temperature=0
         )
     )
 

@@ -24,14 +24,14 @@
       "status": "success",
       "predicted_error": true,
       "assessment": {
-        "overall_assessment": "The translation contains a critical meaning change. The source text uses 'must', which indicates a mandatory requirement for safety, while the translation uses 'puede' (can), which implies an optional action.",
+        "overall_assessment": "The translation contains a critical meaning change as it uses 'puede' (can) instead of 'debe' (must), incorrectly shifting a mandatory safety instruction into a suggestion. This implies the action is optional when it is actually a requirement for safety.",
         "issues": [
           {
             "category": "Mistranslation",
             "severity": "Critical",
             "source_excerpt": "must be disconnected",
             "target_excerpt": "puede desconectarse",
-            "explanation": "The source text uses the modal verb 'must', conveying a mandatory safety instruction. The translation uses 'puede' (can), which changes the meaning to an optional action, potentially creating a safety risk.",
+            "explanation": "The translation uses the modal verb 'puede' (can), which denotes possibility or permission, instead of 'debe' (must), which denotes obligation.",
             "suggestion": "El dispositivo debe desconectarse antes de limpiarlo."
           }
         ]
@@ -47,7 +47,7 @@
       "status": "success",
       "predicted_error": false,
       "assessment": {
-        "overall_assessment": "The translation is accurate, grammatically correct, and preserves the original meaning perfectly.",
+        "overall_assessment": "The translation is accurate and conveys the original meaning correctly without any significant errors. It effectively captures the instructional tone of the source text.",
         "issues": []
       }
     },
@@ -61,14 +61,14 @@
       "status": "success",
       "predicted_error": true,
       "assessment": {
-        "overall_assessment": "The translation is factually opposite to the original text, creating a critical safety hazard.",
+        "overall_assessment": "The translation contains a critical error as it conveys the opposite of the source instruction. The source 'Do not expose' is rendered as the affirmative 'Exponga', which poses a safety risk to the equipment.",
         "issues": [
           {
             "category": "Mistranslation",
             "severity": "Critical",
             "source_excerpt": "Do not expose",
             "target_excerpt": "Exponga",
-            "explanation": "The translation is an imperative that instructs to perform the action ('Expose'), while the original is a negative imperative ('Do not expose'). This is a safety-critical error.",
+            "explanation": "The translation is an affirmative imperative that tells the user to expose the equipment to water, whereas the source text is a negative imperative forbidding it.",
             "suggestion": "No exponga el equipo al agua."
           }
         ]
@@ -84,15 +84,15 @@
       "status": "success",
       "predicted_error": true,
       "assessment": {
-        "overall_assessment": "The translation contains a critical factual error regarding the numerical value provided in the source text.",
+        "overall_assessment": "The translation contains a critical numerical error where the source value '12' was incorrectly translated as '21' in the target text, changing the battery life duration significantly.",
         "issues": [
           {
             "category": "Mistranslation",
             "severity": "Critical",
-            "source_excerpt": "12 hours",
-            "target_excerpt": "21 horas",
-            "explanation": "The source text states '12 hours', but the translation states '21 hours'. This is a numerical error that misrepresents product specifications.",
-            "suggestion": "La batería dura aproximadamente 12 horas."
+            "source_excerpt": "12",
+            "target_excerpt": "21",
+            "explanation": "The number representing the battery life duration has been transposed, resulting in a false claim about the product's performance.",
+            "suggestion": "Change '21' to '12'."
           }
         ]
       }
@@ -107,7 +107,7 @@
       "status": "success",
       "predicted_error": false,
       "assessment": {
-        "overall_assessment": "The translation is accurate, grammatically correct, and preserves the original meaning perfectly.",
+        "overall_assessment": "The translation is accurate and natural, correctly conveying the instruction to the user.",
         "issues": []
       }
     },
@@ -121,14 +121,14 @@
       "status": "success",
       "predicted_error": true,
       "assessment": {
-        "overall_assessment": "The translation is accurate in meaning but misses the nuance of the word 'automatically' present in the source text.",
+        "overall_assessment": "The translation is accurate in meaning but omits the adverb 'automatically' (automáticamente), which is a key functional detail of the software behavior.",
         "issues": [
           {
             "category": "Omission",
             "severity": "Minor",
             "source_excerpt": "automatically",
-            "target_excerpt": "N/A",
-            "explanation": "The word 'automatically' was omitted from the Spanish translation, which loses the specific functional detail that the action happens without user intervention.",
+            "target_excerpt": "",
+            "explanation": "The source text specifies that the saving process happens 'automatically', whereas the target text simply states that the software saves the changes, losing the descriptive nuance of the action.",
             "suggestion": "El software guarda automáticamente los cambios."
           }
         ]
@@ -144,7 +144,7 @@
       "status": "success",
       "predicted_error": false,
       "assessment": {
-        "overall_assessment": "The translation is accurate, grammatically correct, and preserves the original meaning perfectly.",
+        "overall_assessment": "The translation is accurate and conveys the original meaning perfectly with no errors.",
         "issues": []
       }
     },
@@ -158,14 +158,14 @@
       "status": "success",
       "predicted_error": true,
       "assessment": {
-        "overall_assessment": "The translation contains a critical meaning error, as it swaps the logical sequence of the instruction.",
+        "overall_assessment": "The translation contains a critical meaning error where the temporal relationship between the installation and the restart is inverted. The source 'after' is incorrectly translated as 'antes' (before), changing the required sequence of operations.",
         "issues": [
           {
             "category": "Mistranslation",
             "severity": "Critical",
             "source_excerpt": "after",
-            "target_excerpt": "antes de",
-            "explanation": "The source text specifies to restart the application 'after' the installation, whereas the target text incorrectly says 'antes de' (before) the installation, creating a logical contradiction.",
+            "target_excerpt": "antes",
+            "explanation": "The translation uses 'antes' (before) instead of 'después' (after), which leads to a dangerous or incorrect operational instruction.",
             "suggestion": "Reinicie la aplicación después de la instalación."
           }
         ]
@@ -181,7 +181,7 @@
       "status": "success",
       "predicted_error": false,
       "assessment": {
-        "overall_assessment": "The translation is accurate, natural, and maintains the original meaning perfectly.",
+        "overall_assessment": "The translation is accurate and natural, correctly conveying the meaning of the source text with appropriate Spanish terminology.",
         "issues": []
       }
     },
@@ -195,15 +195,15 @@
       "status": "success",
       "predicted_error": true,
       "assessment": {
-        "overall_assessment": "The translation contains a critical meaning error, as it states the opposite of the source text.",
+        "overall_assessment": "The translation contains a critical meaning error where the preposition 'below' (por debajo de) was incorrectly translated as 'above' (por encima de). This reversal of the safety condition could lead to improper temperature control of the equipment or material.",
         "issues": [
           {
             "category": "Mistranslation",
             "severity": "Critical",
-            "source_excerpt": "below 30°C",
-            "target_excerpt": "por encima de 30°C",
-            "explanation": "The translation uses 'por encima de' (above) instead of 'por debajo de' (below), which fundamentally changes the meaning and could result in safety risks.",
-            "suggestion": "La temperatura debe mantenerse por debajo de 30°C."
+            "source_excerpt": "below",
+            "target_excerpt": "por encima de",
+            "explanation": "The target text uses the phrase 'por encima de' which means 'above', effectively reversing the meaning of the original requirement to keep the temperature 'below'.",
+            "suggestion": "Replace 'por encima de' with 'por debajo de'."
           }
         ]
       }
