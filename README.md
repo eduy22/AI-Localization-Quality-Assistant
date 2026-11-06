@@ -6,6 +6,28 @@ AI Localization Quality Assistant is a Python application designed to support lo
 
 The application evaluates source and translated texts, identifies potential linguistic and terminology issues, generates structured quality reports, and demonstrates AI tool calling through a Gemini-powered terminology agent.
 
+
+## Screenshots
+
+### Main Interface
+
+![Main application interface](screenshots/01-main-interface.png)
+![Main application interface1](screenshots/01-main-interface1.png)
+
+### Translation Quality Report
+
+![Translation quality report](screenshots/02-quality-report.png)
+![Translation quality report1](screenshots/02-quality-report1.png)
+
+### Gemini Terminology Agent
+
+![Gemini function calling and terminology tool execution](screenshots/03-agent-tool-calling.png)
+
+### Evaluation Dashboard
+
+![Evaluation metrics and confusion matrix](screenshots/04-evaluation-dashboard.png)
+
+
 ## Features
 
 ### AI-Powered Translation Quality Assessment
