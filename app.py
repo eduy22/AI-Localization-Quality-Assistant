@@ -364,24 +364,87 @@ if st.session_state.review_result is not None:
         st.info("No findings detected.")
 
 
+    
     st.subheader("Detected Issues")
 
-    if report["issues"]:
-        for index, issue in enumerate(report["issues"], start=1):
+    ai_issues = [
+        issue for issue in report["issues"]
+        if issue["detected_by"] == "Gemini"
+    ]
 
+    terminology_issues = [
+        issue for issue in report["issues"]
+        if issue["detected_by"] == "Terminology Checker"
+    ]
+
+    # AI findings
+    if mode == "full":
+        st.markdown(
+            f"#### AI Linguistic Assessment "
+            f"({len(ai_issues)} findings)"
+        )
+
+        if ai_issues:
+            for index, issue in enumerate(ai_issues, start=1):
+                with st.expander(
+                    f"{index}. {issue['category']} "
+                    f"({issue['severity']})",
+                    expanded=True
+                ):
+                    st.write(
+                        "**Source excerpt:**",
+                        issue["source_excerpt"]
+                    )
+                    st.write(
+                        "**Translation excerpt:**",
+                        issue["target_excerpt"]
+                    )
+                    st.write(
+                        "**Explanation:**",
+                        issue["explanation"]
+                    )
+                    st.write(
+                        "**Suggested correction:**",
+                        issue["suggestion"]
+                    )
+        else:
+            st.success("No linguistic issues detected by Gemini.")
+
+    # Rule-based terminology findings
+    st.markdown(
+        f"#### Rule-Based Terminology Check "
+        f"({len(terminology_issues)} findings)"
+    )
+
+    if terminology_issues:
+        for index, issue in enumerate(terminology_issues, start=1):
             with st.expander(
-                f"{index}. {issue['category']} "
-                f"({issue['severity']})",
+                f"{index}. Missing required term: "
+                f"{issue['source_excerpt']}",
                 expanded=True
             ):
-                st.write("**Detected by:**", issue["detected_by"])
-                st.write("**Source:**", issue["source_excerpt"])
-                st.write("**Target / required term:**", issue["target_excerpt"])
-                st.write("**Explanation:**", issue["explanation"])
-                st.write("**Suggestion:**", issue["suggestion"])
-
+                st.write(
+                    "**Source term:**",
+                    issue["source_excerpt"]
+                )
+                st.write(
+                    "**Required translation:**",
+                    issue["target_excerpt"]
+                )
+                st.write(
+                    "**Explanation:**",
+                    issue["explanation"]
+                )
+                st.write(
+                    "**Recommendation:**",
+                    issue["suggestion"]
+                )
     else:
-        st.success("No issues detected by the executed checks.")
+        st.success(
+            "No terminology issues detected "
+            "by the rule-based checker."
+        )
+
 
     st.caption(
         "Findings from different checks may overlap. "
