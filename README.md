@@ -2,6 +2,8 @@
 
 **AI-powered translation quality assessment and terminology validation using Google Gemini, Python and Streamlit.**
 
+[**Live Demo**](https://ai-localization-quality-assistant.streamlit.app/) | [**Source Code**](https://github.com/eduy22/AI-Localization-Quality-Assistant)
+
 AI Localization Quality Assistant is a Python application designed to support localization quality assurance workflows by combining generative AI analysis with deterministic terminology checks.
 
 The application evaluates source and translated texts, identifies potential linguistic and terminology issues, generates structured quality reports, and demonstrates AI tool calling through a Gemini-powered terminology agent.
@@ -129,6 +131,10 @@ These metrics describe one evaluation run on the provided dataset.
 The evaluation dataset, script and recorded results are available in the `evaluation/` directory.
 
 ## Installation
+
+**Want to try the application without installing anything?**
+
+Access the [Live Demo](https://ai-localization-quality-assistant.streamlit.app/) directly in your browser. No local setup or API key is required.
 
 ### Prerequisites
 
