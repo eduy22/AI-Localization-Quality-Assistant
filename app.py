@@ -283,6 +283,7 @@ if st.session_state.review_result is not None:
             )
         )
 
+    
     st.subheader("Findings by Category")
 
     categories = metrics["categories"]
@@ -295,30 +296,73 @@ if st.session_state.review_result is not None:
             ]
         )
 
-        chart = (
+        max_count = int(chart_data["Findings"].max())
+
+        bars = (
             alt.Chart(chart_data)
-            .mark_bar(size=22, cornerRadiusEnd=4)
+            .mark_bar(
+                size=18,
+                cornerRadiusEnd=4,
+                color="#3978B8"
+            )
             .encode(
                 y=alt.Y(
                     "Category:N",
                     sort="-x",
                     title=None,
-                    axis=alt.Axis(labelAngle=0)
+                    axis=alt.Axis(
+                        labelAngle=0,
+                        labelFontSize=13,
+                        labelLimit=180
+                    )
                 ),
                 x=alt.X(
                     "Findings:Q",
-                    title="Number of findings",
-                    axis=alt.Axis(tickMinStep=1)
+                    title=None,
+                    scale=alt.Scale(
+                        domain=[0, max(2, max_count + 1)],
+                        nice=False
+                    ),
+                    axis=alt.Axis(
+                        tickMinStep=1,
+                        format="d",
+                        grid=False
+                    )
                 ),
                 tooltip=["Category", "Findings"]
             )
-            .properties(height=max(90, len(categories) * 55))
         )
 
-        st.altair_chart(chart, use_container_width=True)
+        labels = (
+            alt.Chart(chart_data)
+            .mark_text(
+                align="left",
+                baseline="middle",
+                dx=8,
+                fontSize=13
+            )
+            .encode(
+                y=alt.Y("Category:N", sort="-x"),
+                x=alt.X("Findings:Q"),
+                text="Findings:Q"
+            )
+        )
+
+        chart = (
+            (bars + labels)
+            .properties(
+                height=max(130, len(categories) * 65)
+            )
+        )
+
+        st.altair_chart(
+            chart,
+            use_container_width=True
+        )
 
     else:
         st.info("No findings detected.")
+
 
     st.subheader("Detected Issues")
 
